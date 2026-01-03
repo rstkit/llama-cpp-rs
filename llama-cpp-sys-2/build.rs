@@ -204,21 +204,21 @@ fn main() {
     let _tools_directory = std::fs::canonicalize(Path::new(
         &env::var("TOOLS_DIR").expect("get TOOLS_DIR environment"),
     ))
-    .expect("failed to collect path");
+    .expect("failed to collect TOOLS_DIR path");
     let emscripten_sdk = std::fs::canonicalize(Path::new(
         &env::var("EMSDK_DIR").expect("get EMSDK_DIR environment"),
     ))
-    .expect("failed to collect path");
+    .expect("failed to collect EMSDK_DIR path");
 
     let llama_src = std::fs::canonicalize(Path::new(
         &env::var("LLAMA_DIR").expect("get LLAMA_DIR environment"),
     ))
-    .expect("failed to collect path");
+    .expect("failed to collect LLAMA_DIR path");
 
     let dawn_directory = std::fs::canonicalize(Path::new(
         &env::var("DAWN_DIR").expect("get DAWN_DIR environment"),
     ))
-    .expect("failed to collect path");
+    .expect("failed to collect DAWN_DIR path");
 
     let library_search_tools = [
         llama_src.clone(),
@@ -241,7 +241,7 @@ fn main() {
 
     println!("TOOL_DIR: : {:?}", &cmake_append_search_path);
 
-    // env::set_var("CMAKE_PREFIX_PATH", cmake_append_search_path.join(":"));
+    env::set_var("CMAKE_PREFIX_PATH", cmake_append_search_path.join(":"));
 
     let (target_os, target_triple) =
         parse_target_os().unwrap_or_else(|t| panic!("Failed to parse target os {t}"));
