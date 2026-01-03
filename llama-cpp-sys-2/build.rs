@@ -206,7 +206,7 @@ fn main() {
 
     let target_dir = get_cargo_target_dir().unwrap();
     let manifest_dir = env::var("CARGO_MANIFEST_DIR").expect("Failed to get CARGO_MANIFEST_DIR");
-    let llama_src = Path::new(&manifest_dir).join("llama.cpp");
+    let llama_src = Path::new(&manifest_dir).join("../tools/llama.cpp");
     let build_shared_libs = cfg!(feature = "dynamic-link");
 
     let build_shared_libs = std::env::var("LLAMA_BUILD_SHARED_LIBS")
