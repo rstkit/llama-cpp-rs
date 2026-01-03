@@ -4,3 +4,6 @@
 [submodule "llama-cpp-sys-2/dawn"]
 	path = llama-cpp-sys-2/dawn
 	url = git@github.com:rstkit/llama-cpp-rs.git
+[submodule "tools/emsdk"]
+	path = tools/emsdk
+	url = https://github.com/emscripten-core/emsdk.git
