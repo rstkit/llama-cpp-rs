@@ -2,7 +2,7 @@
 	path = llama-cpp-sys-2/llama.cpp
 	url = https://github.com/ggml-org/llama.cpp
 [submodule "llama-cpp-sys-2/dawn"]
-	path = llama-cpp-sys-2/dawn
+	path = tools/dawn
 	url = git@github.com:rstkit/llama-cpp-rs.git
 [submodule "tools/emsdk"]
 	path = tools/emsdk
