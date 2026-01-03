@@ -1,0 +1,5 @@
+[env]
+TOOLS_DIR = { value = "tools", relative=true, force = true }
+LLAMA_DIR = { value = "llama-cpp-sys-2/llama.cpp", relative=true, force = true }
+DAWN_DIR = { value = "tools/dawn", relative=true, force = true }
+EMSDK_DIR = { value = "tools/emsdk", relative=true, force = true }

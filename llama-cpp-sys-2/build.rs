@@ -200,13 +200,56 @@ fn is_hidden(e: &DirEntry) -> bool {
 fn main() {
     println!("cargo:rerun-if-changed=build.rs");
 
+    let cmake_prefix_path = env::var("CMAKE_PREFIX_PATH").unwrap_or("".into());
+    let _tools_directory = std::fs::canonicalize(Path::new(
+        &env::var("TOOLS_DIR").expect("get TOOLS_DIR environment"),
+    ))
+    .expect("failed to collect path");
+    let emscripten_sdk = std::fs::canonicalize(Path::new(
+        &env::var("EMSDK_DIR").expect("get EMSDK_DIR environment"),
+    ))
+    .expect("failed to collect path");
+
+    let llama_src = std::fs::canonicalize(Path::new(
+        &env::var("LLAMA_DIR").expect("get LLAMA_DIR environment"),
+    ))
+    .expect("failed to collect path");
+
+    let dawn_directory = std::fs::canonicalize(Path::new(
+        &env::var("DAWN_DIR").expect("get DAWN_DIR environment"),
+    ))
+    .expect("failed to collect path");
+
+    let library_search_tools = [
+        llama_src.clone(),
+        dawn_directory.clone(),
+        llama_src.join("tools"),
+        dawn_directory.join("install/Release"),
+        emscripten_sdk.join("upstream/emscripten"),
+    ];
+
+    let mut cmake_append_search_path: Vec<String> = Vec::new();
+    if !cmake_prefix_path.is_empty() {
+        cmake_append_search_path.push(cmake_prefix_path);
+    }
+    cmake_append_search_path.extend(library_search_tools.iter().map(|item| {
+        item.clone()
+            .into_os_string()
+            .into_string()
+            .expect("get string")
+    }));
+
+    println!("TOOL_DIR: : {:?}", &cmake_append_search_path);
+
+    // env::set_var("CMAKE_PREFIX_PATH", cmake_append_search_path.join(":"));
+
     let (target_os, target_triple) =
         parse_target_os().unwrap_or_else(|t| panic!("Failed to parse target os {t}"));
     let out_dir = PathBuf::from(env::var("OUT_DIR").unwrap());
 
     let target_dir = get_cargo_target_dir().unwrap();
     let manifest_dir = env::var("CARGO_MANIFEST_DIR").expect("Failed to get CARGO_MANIFEST_DIR");
-    let llama_src = Path::new(&manifest_dir).join("../tools/llama.cpp");
+
     let build_shared_libs = cfg!(feature = "dynamic-link");
 
     let build_shared_libs = std::env::var("LLAMA_BUILD_SHARED_LIBS")
@@ -489,6 +532,7 @@ fn main() {
     // Would require extra source files to pointlessly
     // be included in what's uploaded to and downloaded from
     // crates.io, so deactivating these instead
+    // config.define("CMAKE_PREFIX_PATH", cmake_append_search_path.join(";"));
     config.define("LLAMA_BUILD_TESTS", "OFF");
     config.define("LLAMA_BUILD_EXAMPLES", "OFF");
     config.define("LLAMA_BUILD_SERVER", "OFF");
