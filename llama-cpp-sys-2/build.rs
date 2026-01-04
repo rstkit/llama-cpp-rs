@@ -215,6 +215,9 @@ fn main() {
     ))
     .expect("failed to collect LLAMA_DIR path");
 
+    let llama_tools_directory = llama_src.join("tools");
+    let llama_mtmh_directory = llama_tools_directory.join("mtmd");
+
     let dawn_directory = std::fs::canonicalize(Path::new(
         &env::var("DAWN_DIR").expect("get DAWN_DIR environment"),
     ))
@@ -223,7 +226,8 @@ fn main() {
     let library_search_tools = [
         llama_src.clone(),
         dawn_directory.clone(),
-        llama_src.join("tools"),
+        llama_tools_directory.clone(),
+        llama_mtmh_directory.clone(),
         dawn_directory.join("install/Release"),
         emscripten_sdk.join("upstream/emscripten"),
     ];
@@ -239,9 +243,15 @@ fn main() {
             .expect("get string")
     }));
 
-    println!("TOOL_DIR: : {:?}", &cmake_append_search_path);
-
     env::set_var("CMAKE_PREFIX_PATH", cmake_append_search_path.join(":"));
+    println!(
+        "CMAKE_PREFIX_PATH: : {:?}",
+        cmake_append_search_path.join(":")
+    );
+
+    // Inform cargo about rerun conditions
+    println!("cargo:rerun-if-changed={}", llama_tools_directory.display());
+    println!("cargo:rustc-link-search={}", llama_mtmh_directory.display());
 
     let (target_os, target_triple) =
         parse_target_os().unwrap_or_else(|t| panic!("Failed to parse target os {t}"));
@@ -307,8 +317,6 @@ fn main() {
     // Bindings
     let mut bindings_builder = bindgen::Builder::default()
         .header("wrapper.h")
-        .clang_arg(format!("-I{}", llama_src.join("tools").display()))
-        .clang_arg(format!("-I{}", llama_src.join("tools/mtmd").display()))
         .clang_arg(format!("-I{}", llama_src.join("include").display()))
         .clang_arg(format!("-I{}", llama_src.join("ggml/include").display()))
         .parse_callbacks(Box::new(bindgen::CargoCallbacks::new()))
