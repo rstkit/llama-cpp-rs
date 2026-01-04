@@ -243,16 +243,6 @@ fn main() {
             .expect("get string")
     }));
 
-    env::set_var("CMAKE_PREFIX_PATH", cmake_append_search_path.join(":"));
-    println!(
-        "CMAKE_PREFIX_PATH: : {:?}",
-        cmake_append_search_path.join(":")
-    );
-
-    // Inform cargo about rerun conditions
-    println!("cargo:rerun-if-changed={}", llama_tools_directory.display());
-    println!("cargo:rustc-link-search={}", llama_mtmh_directory.display());
-
     let (target_os, target_triple) =
         parse_target_os().unwrap_or_else(|t| panic!("Failed to parse target os {t}"));
     let out_dir = PathBuf::from(env::var("OUT_DIR").unwrap());
@@ -543,15 +533,24 @@ fn main() {
     // Would require extra source files to pointlessly
     // be included in what's uploaded to and downloaded from
     // crates.io, so deactivating these instead
-    // config.define("CMAKE_PREFIX_PATH", cmake_append_search_path.join(";"));
+    config.define("CMAKE_PREFIX_PATH", cmake_append_search_path.join(";"));
+    config.define("CMAKE_INCLUDE_PATH", cmake_append_search_path.join(";"));
+    config.define("CMAKE_LIBRARY_PATH", cmake_append_search_path.join(";"));
     config.define("LLAMA_BUILD_TESTS", "OFF");
     config.define("LLAMA_BUILD_EXAMPLES", "OFF");
-    config.define("LLAMA_BUILD_SERVER", "OFF");
     config.define("LLAMA_BUILD_TOOLS", "OFF");
     config.define("LLAMA_CURL", "OFF");
 
+    config.define("LLAMA_BUILD_COMMON", "ON");
+
+    println!(
+        "CMAKE_PREFIX_PATH: {:?}",
+        cmake_append_search_path.join(";")
+    );
+
     if cfg!(feature = "mtmd") {
         config.define("LLAMA_BUILD_COMMON", "ON");
+
         // mtmd support in llama-cpp is within the tools directory
         config.define("LLAMA_BUILD_TOOLS", "ON");
     }
