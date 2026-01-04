@@ -26,6 +26,8 @@ include = [
     "/llama.cpp/src/models/*.cpp",
     "/llama.cpp/tools/mtmd/*.h",
     "/llama.cpp/tools/mtmd/*.cpp",
+    "/llama.cpp/tools/**/*.h",
+    "/llama.cpp/tools/**/*.cpp",
 
     "/llama.cpp/convert_hf_to_gguf.py", # Yes, it's required
     "/llama.cpp/common/build-info.cpp.in",
@@ -53,14 +55,14 @@ include = [
     "/llama.cpp/ggml/CMakeLists.txt",
     "/llama.cpp/ggml/src/CMakeLists.txt",
     "/llama.cpp/src/CMakeLists.txt",
+    "/llama.cpp/tools/CMakeLists.txt",
+    "/llama.cpp/tools/mtmd/CMakeLists.txt",
+    "/llama.cpp/tools/server/CMakeLists.txt",
 
     "/llama.cpp/cmake",
     "/llama.cpp/ggml/cmake",
     "/llama.cpp/common/cmake",
 
-    # Add tools and mtmd llama CmakeList
-    # "/llama.cpp/tools/CMakeLists.txt",
-    "/llama.cpp/tools/mtmd/CMakeLists.txt",
 ]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html

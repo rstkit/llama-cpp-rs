@@ -275,6 +275,7 @@ fn main() {
         llama_src.join("src"),
         llama_src.join("ggml/src"),
         llama_src.join("common"),
+        llama_src.join("tools"),
     ];
     for entry in walkdir::WalkDir::new(&llama_src)
         .into_iter()
@@ -306,6 +307,8 @@ fn main() {
     // Bindings
     let mut bindings_builder = bindgen::Builder::default()
         .header("wrapper.h")
+        .clang_arg(format!("-I{}", llama_src.join("tools").display()))
+        .clang_arg(format!("-I{}", llama_src.join("tools/mtmd").display()))
         .clang_arg(format!("-I{}", llama_src.join("include").display()))
         .clang_arg(format!("-I{}", llama_src.join("ggml/include").display()))
         .parse_callbacks(Box::new(bindgen::CargoCallbacks::new()))
@@ -822,6 +825,10 @@ fn main() {
     let build_dir = config.build();
 
     // Search paths
+    println!(
+        "cargo:rustc-link-search={}",
+        llama_src.join("tools/*").display()
+    );
     println!("cargo:rustc-link-search={}", out_dir.join("lib").display());
     println!(
         "cargo:rustc-link-search={}",
